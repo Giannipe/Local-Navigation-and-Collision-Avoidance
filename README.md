@@ -1,13 +1,13 @@
-### Obstacle Avoidance and Robot Following with Dynamic Window Approach
+# Obstacle Avoidance and Robot Following with Dynamic Window Approach
 # 🎯 Objectives and Scope
 
 The purpose of this project is to develop a local navigation planner capable of generating feasible trajectories that:
 
-Respect the robot’s kinematic constraints (linear and angular velocity/acceleration limits).
+* Respect the robot’s kinematic constraints (linear and angular velocity/acceleration limits).
 
-Avoid obstacles that may appear after global planning.
+* Avoid obstacles that may appear after global planning.
 
-Track a moving goal (in this case, another robot or a marker) in real-time.
+* Track a moving goal (in this case, another robot or a marker) in real-time.
 
 To achieve this, the Dynamic Window Approach (DWA) was implemented within a ROS2 node. The system integrates sensor data, goal updates, and control laws to generate safe, collision-free trajectories that guide the robot toward the moving target.
 
