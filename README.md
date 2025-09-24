@@ -3,11 +3,9 @@
 
 The purpose of this project is to develop a local navigation planner capable of generating feasible trajectories that:
 
-- Respect the robot’s kinematic constraints (linear and angular velocity/acceleration limits).
-
-* Avoid obstacles that may appear after global planning.
-
-* Track a moving goal (in this case, another robot or a marker) in real-time.
+1. Respect the robot’s kinematic constraints (linear and angular velocity/acceleration limits).
+2. Avoid obstacles that may appear after global planning.
+3. Track a moving goal (in this case, another robot or a marker) in real-time.
 
 To achieve this, the Dynamic Window Approach (DWA) was implemented within a ROS2 node. The system integrates sensor data, goal updates, and control laws to generate safe, collision-free trajectories that guide the robot toward the moving target.
 
@@ -16,109 +14,52 @@ To achieve this, the Dynamic Window Approach (DWA) was implemented within a ROS2
 
 The DWA restricts the search space of possible velocities by considering three sets:
 
-Vs (velocity space): all velocities allowed by the robot’s physical limits.
-
-Vd (dynamic window): velocities reachable within the next control interval.
-
-Va (admissible velocities): velocities that are collision-free given current sensor data.
+- Vs (velocity space): all velocities allowed by the robot’s physical limits.
+- Vd (dynamic window): velocities reachable within the next control interval.
+- Va (admissible velocities): velocities that are collision-free given current sensor data.
 
 The intersection of these sets defines the feasible velocity window. Each candidate velocity pair (v, ω) is simulated, and the one maximizing the objective function is chosen:
 
-𝐺
-(
-𝑣
-,
-𝜔
-)
-=
-𝜎
-(
-𝛼
-⋅
-ℎ
-𝑒
-𝑎
-𝑑
-𝑖
-𝑛
-𝑔
-(
-𝑣
-,
-𝜔
-)
-+
-𝛽
-⋅
-𝑣
-𝑒
-𝑙
-(
-𝑣
-,
-𝜔
-)
-+
-𝛾
-⋅
-𝑑
-𝑖
-𝑠
-𝑡
-(
-𝑣
-,
-𝜔
-)
-)
-G(v,ω)=σ(α⋅heading(v,ω)+β⋅vel(v,ω)+γ⋅dist(v,ω))
+$$
+G(v, \omega) = \sigma \big( \alpha \cdot heading(v,\omega) + \beta \cdot vel(v,\omega) + \gamma \cdot dist(v,\omega) \big)
+$$
 
 Where:
 
-heading → alignment with the goal.
-
-vel → forward motion efficiency.
-
-dist → clearance from obstacles.
-
-σ → normalization.
+- heading → alignment with the goal.
+- vel → forward motion efficiency.
+- dist → clearance from obstacles.
+- σ → normalization.
 
 This heuristic cost balances goal-seeking, speed, and safety.
 
 
 # ⚙️ Task 1 – Static Goal Navigation
-# Node Structure
+## Node Structure
 
 The ROS2 node implements the DWA in a control loop running at 15 Hz, via a timer callback. Each cycle:
 
-Checks if a goal is set and sensor data is available.
+1. Checks if a goal is set and sensor data is available.
+2. Updates the obstacle map from LiDAR.
+3. Computes the control command using the DWA controller.
+4. Applies safety checks and publishes the velocity command.
+5. Provides debugging feedback (goal distance, obstacle visualization).
 
-Updates the obstacle map from LiDAR.
-
-Computes the control command using the DWA controller.
-
-Applies safety checks and publishes the velocity command.
-
-Provides debugging feedback (goal distance, obstacle visualization).
-
-# Sensor Data Processing
+## Sensor Data Processing
 
 LiDAR scan data may contain invalid readings (NaN, ∞). A preprocessing function:
 
-Replaces NaN with a minimum value, ∞ with max range.
+- Replaces NaN with a minimum value, ∞ with max range.
+- Saturates values to 3.5 m.
+- Groups data by angular sectors, taking the minimum in each sector. This yields a compact and reliable obstacle set.
 
-Saturates values to 3.5 m.
-
-Groups data by angular sectors, taking the minimum in each sector.
-This yields a compact and reliable obstacle set.
-
-def process_data(self, points):
+''' def process_data(self, points):
     cleaned = np.nan_to_num(points, nan=self.min_dist, posinf=self.max_dist)
     saturated = np.minimum(cleaned, self.max_dist)
     ...
-    return np.array(scan_range)
+    return np.array(scan_range) '''
 
-# Obstacle Mapping
+## Obstacle Mapping
 
 To convert LiDAR readings into global coordinates, homogeneous transformations are applied:
 
