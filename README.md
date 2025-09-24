@@ -253,12 +253,11 @@ For this reason, the cost function was modified with two main changes:
 The new objective function can be expressed as:
 
 $$
-G(v,\omega) = \mathrm{norm}\!\left(
-  \alpha\,\mathrm{heading}(v,\omega) +
-  \beta\,\mathrm{vel}(v,\omega) +
-  \gamma\,\mathrm{dist}(v,\omega) +
-  \delta\,\mathrm{sightline}(v,\omega)
-\right)
+G(v,\omega) =
+  \alpha \cdot heading(v,\omega) +
+  \beta \cdot vel(v,\omega) +
+  \gamma \cdot dist(v,\omega) +
+  \lambda \cdot sightline(v,\omega)
 $$
 
 Where:  
@@ -297,10 +296,11 @@ To ensure safe and stable operation, several adjustments were made:
 The updated cost function emphasized keeping the target in sight and maintaining a safe following distance:
 
 $$
-G(v, \omega) = \sigma \big( \alpha \cdot heading(v, \omega) 
-+ \beta \cdot vel(v, \omega) 
-+ \gamma \cdot dist(v, \omega) 
-+ \sigma \cdot sightline(v, \omega) \big)
+G(v,\omega) =
+  \alpha \cdot heading(v,\omega) +
+  \beta \cdot vel(v,\omega) +
+  \gamma \cdot dist(v,\omega) +
+  \lambda \cdot sightline(v,\omega)
 $$
 
 Where the weights now strongly prioritized **obstacle clearance** and **sightline maintenance** compared to Task 2.
