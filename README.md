@@ -45,7 +45,8 @@ LiDAR scan data may contain invalid readings (***NaN***, ***∞***). A preproces
 - Replaces NaN with a minimum value, ∞ with max range.
 - Saturates values to ***3.5 m***.
 - Groups data by angular sectors, taking the minimum in each sector. This yields a compact and reliable obstacle set.
-(''')
+- 
+```python
     def process_data(self, points):
         """Filter outlier values from ranges, subsample the desired num of ranges, saturate to max_dist"""
 
@@ -64,7 +65,8 @@ LiDAR scan data may contain invalid readings (***NaN***, ***∞***). A preproces
             scan_range.append([min(grouped_range), np.argmin(grouped_range)+i*(group_length)])
 
         return np.array(scan_range)
-(''')
+```
+
 ### Obstacle Mapping
 The obstacle coordinates are computed from LiDAR data and expressed in the **global frame** using linear transformations.  
 Since the LiDAR is mounted on the robot’s front, each detected point in the **sensor frame** can be transformed into global coordinates through:
@@ -103,6 +105,7 @@ d \\ 0 \\ 0 \\ 1
 \right]
 $$
 
+```python
  def range_to_obstacles(ranges, robot_pose):
         """""
         Compute the endpoint map coordinate from the scan range sensed
@@ -139,21 +142,24 @@ $$
 <p align="center">
   <img src="obstacles.png" alt="Obstacles in Rviz">
 </p>
+```
 
 ### Safety Mechanism
 Using the set of filtered laser ranges, it was implemented a safety mechanism to stop the robot in cases of high proximity with obstacles. 
 
+```python
     def check_safety(self):
         min_safe_distance = self.robot_radius + self.collision_tol
         if any(self.filtered_ranges[:,0] < min_safe_distance):
             return False
         return True
+```
 
 ### Goal Management
 Since the goal is moving, it is needed to update the target position from time to time. The goal manager assigns the new target position when it is recieved.
 
+```python
     (...)
-
     self.subscription = self.create_subscription(Odometry, '/dynamic_goal_pose', self.goal_callback, 10)
 
     (...)
@@ -162,11 +168,12 @@ Since the goal is moving, it is needed to update the target position from time t
         x = pose_msg.pose.pose.position.x
         y = pose_msg.pose.pose.position.y
         self.goal_pose = np.array([x,y])
-
+```
 
 ### Feedback & Debugging
 To follow the DWA in action and help debugging, it was created a publisher to provide the current distance to the goal at every 50 times the *control_caballcak* function is called
 
+```python
     (...)
 	
     self.distance_goal_publisher_ = self.create_publisher(msg_type=Float32, topic='/distance_goal', qos_profile=10)
@@ -178,14 +185,16 @@ To follow the DWA in action and help debugging, it was created a publisher to pr
             float_msg = Float32()
             float_msg.data = dist_to_goal
             self.distance_goal_publisher_(float_msg)
+```
 
-# 🚦 Control Callback – Main Loop
+### 🚦 Control Callback – Main Loop
 With all auxiliary functions in place, the **control_callback** function was completed with the full algorithmic structure.  
 To manage task termination, print statements were added to indicate the event that ended the process:  
 - **Goal** → the robot reached the target.  
 - **Collision** → the safety mechanism was triggered.  
-- **Timeout** → the robot failed to approach the target within the allowed time.  
+- **Timeout** → the robot failed to approach the target within the allowed time.
 
+```python
     def control_callback(self):
         sensor_data_is_available = self.laser_msg is not None
         goal_pose_is_set = self.goal_pose is not None
@@ -227,6 +236,7 @@ To manage task termination, print statements were added to indicate the event th
         if self.N > self.allowed_steps:
             self.end = True
             print("Timeout! Goal not reached.")
+```
 
 ## 🔎 Summary of Task 1
 At this stage, the system successfully navigates toward a static goal, avoiding obstacles while respecting kinematic constraints. The core structure—sensor preprocessing, obstacle mapping, safety check, and DWA-based command generation—forms the foundation for later tasks involving dynamic goal tracking (Task 2) and real-world deployment (Task 3).
