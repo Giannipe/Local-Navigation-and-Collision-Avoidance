@@ -1,22 +1,19 @@
 # Obstacle Avoidance and Robot Following with Dynamic Window Approach
-# 🎯 Objectives and Scope
 
-The purpose of this project is to develop a local navigation planner capable of generating feasible trajectories that:
+## 🎯 Objectives and Scope
+The purpose of this project is to develop a **local navigation planner** capable of generating feasible trajectories that:
 
-1. Respect the robot’s kinematic constraints (linear and angular velocity/acceleration limits).
-2. Avoid obstacles that may appear after global planning.
-3. Track a moving goal (in this case, another robot or a marker) in real-time.
+1. Respect the robot’s **kinematic constraints** (linear and angular velocity/acceleration limits).
+2. **Avoid obstacles** that may appear after global planning.
+3. **Track a moving goal** (in this case, another robot or a marker) in real-time.
 
-To achieve this, the Dynamic Window Approach (DWA) was implemented within a ROS2 node. The system integrates sensor data, goal updates, and control laws to generate safe, collision-free trajectories that guide the robot toward the moving target.
+To achieve this, the **Dynamic Window Approach (DWA)** was implemented within a ROS2 node. The system integrates sensor data, goal updates, and control laws to generate safe, collision-free trajectories that guide the robot toward the moving target.
 
-
-# 🧩 Dynamic Window Approach – Core Idea
-
+## 🧩 Dynamic Window Approach – Core Idea
 The DWA restricts the search space of possible velocities by considering three sets:
-
-- Vs (velocity space): all velocities allowed by the robot’s physical limits.
-- Vd (dynamic window): velocities reachable within the next control interval.
-- Va (admissible velocities): velocities that are collision-free given current sensor data.
+- **Vs** (velocity space): all velocities allowed by the robot’s physical limits.
+- **Vd** (dynamic window): velocities reachable within the next control interval.
+- **Va** (admissible velocities): velocities that are collision-free given current sensor data.
 
 The intersection of these sets defines the feasible velocity window. Each candidate velocity pair (v, ω) is simulated, and the one maximizing the objective function is chosen:
 
@@ -25,11 +22,10 @@ G(v, \omega) = \sigma \big( \alpha \cdot heading(v,\omega) + \beta \cdot vel(v,\
 $$
 
 Where:
-
-- heading → alignment with the goal.
-- vel → forward motion efficiency.
-- dist → clearance from obstacles.
-- σ → normalization.
+- 'heading' → alignment with the goal.
+- 'vel' → forward motion efficiency.
+- 'dist' → clearance from obstacles.
+- 'σ' → normalization.
 
 This heuristic cost balances goal-seeking, speed, and safety.
 
@@ -53,7 +49,8 @@ LiDAR scan data may contain invalid readings (NaN, ∞). A preprocessing functio
 - Saturates values to 3.5 m.
 - Groups data by angular sectors, taking the minimum in each sector. This yields a compact and reliable obstacle set.
 
-''' def process_data(self, points):
+'''py
+ def process_data(self, points):
     cleaned = np.nan_to_num(points, nan=self.min_dist, posinf=self.max_dist)
     saturated = np.minimum(cleaned, self.max_dist)
     ...
