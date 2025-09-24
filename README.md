@@ -45,7 +45,7 @@ LiDAR scan data may contain invalid readings (***NaN***, ***∞***). A preproces
 - Replaces NaN with a minimum value, ∞ with max range.
 - Saturates values to ***3.5 m***.
 - Groups data by angular sectors, taking the minimum in each sector. This yields a compact and reliable obstacle set.
-- 
+
 ```python
     def process_data(self, points):
         """Filter outlier values from ranges, subsample the desired num of ranges, saturate to max_dist"""
