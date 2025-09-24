@@ -219,65 +219,43 @@ Established a simulation framework to transition toward real-world tests.
 
 Task 3 extended the navigation strategy to real-world testing with a Turtlebot.
 
-# Implementation
+## Implementation
 
-Visual tracking: AprilTags detected through RGB-D camera (/camera/landmarks).
+- Visual tracking: AprilTags detected through RGB-D camera (/camera/landmarks).
+- Dynamic goals: Either another robot or handheld markers.
+- Control parameters (tuned for safety):
+-- α = 0.4 (heading)
+-- β = 0.08 (velocity)
+-- γ = 0.55 (obstacle clearance)
+-- σ = 0.75 (sightline factor)
+- Hardware constraints:
+-- Max linear velocity = 0.15–0.20 m/s
+-- Sensor range = 0.1–3.5 m
+-- Collision tolerance = 0.15 m
 
-Dynamic goals: Either another robot or handheld markers.
+## Challenges Addressed
 
-Control parameters (tuned for safety):
+- Sensor noise → applied filtering to handle spurious LiDAR readings.
+- Target detection → adapted AprilTag size, accounted for 0–3 tag visibility.
+- Latency & lighting → adjusted QoS profile for ROS2 subscribers.
 
-α = 0.4 (heading)
+## Experimental Results
 
-β = 0.08 (velocity)
+- Success rate around 90% in controlled lab tests.
+- Robot maintained ~0.2 m average distance from target with RMSE ≈ 0.29 m.
+- Temporary failures when:
+-- Tags were occluded,
+-- Target executed sharp turns,
+-- Velocity exceeded safety limits.
+-Despite these, the robot consistently resumed following once the target was reacquired.
 
-γ = 0.55 (obstacle clearance)
+## Outcomes
 
-σ = 0.75 (sightline factor)
-
-Hardware constraints:
-
-Max linear velocity = 0.15–0.20 m/s
-
-Sensor range = 0.1–3.5 m
-
-Collision tolerance = 0.15 m
-
-# Challenges Addressed
-
-Sensor noise → applied filtering to handle spurious LiDAR readings.
-
-Target detection → adapted AprilTag size, accounted for 0–3 tag visibility.
-
-Latency & lighting → adjusted QoS profile for ROS2 subscribers.
-
-# Experimental Results
-
-Success rate around 90% in controlled lab tests.
-
-Robot maintained ~0.2 m average distance from target with RMSE ≈ 0.29 m.
-
-Temporary failures when:
-
-Tags were occluded,
-
-Target executed sharp turns,
-
-Velocity exceeded safety limits.
-
-Despite these, the robot consistently resumed following once the target was reacquired.
-
-# Outcomes
-
-Demonstrated robust real-world performance despite environmental variability.
-
-Validated system architecture for dynamic goal tracking with obstacle avoidance.
-
-Identified limitations for improvement:
-
-Better sensor fusion (LiDAR + visual odometry).
-
-Enhanced control to anticipate sharp turns.
+- Demonstrated robust real-world performance despite environmental variability.
+- Validated system architecture for dynamic goal tracking with obstacle avoidance.
+- Identified limitations for improvement:
+-- Better sensor fusion (LiDAR + visual odometry).
+-- Enhanced control to anticipate sharp turns.
 
 Adaptive parameter tuning with ML approaches.
 
@@ -285,16 +263,12 @@ Adaptive parameter tuning with ML approaches.
 
 This project successfully designed, implemented, and tested a navigation pipeline enabling a robot to:
 
-Follow a moving target.
-
-Avoid static and dynamic obstacles.
-
-Operate both in simulation and on a real robot.
+- Follow a moving target.
+- Avoid static and dynamic obstacles.
+- Operate both in simulation and on a real robot.
 
 The combination of DWA trajectory planning, LiDAR-based obstacle mapping, and vision-based target detection proved effective and reliable. While some limitations remain in highly dynamic conditions, the work provides a solid foundation for extensions such as:
 
-Cooperative multi-robot tracking,
-
-Sensor fusion for localization,
-
-Adaptive/learning-based navigation strategies.
+- Cooperative multi-robot tracking,
+- Sensor fusion for localization,
+- Adaptive/learning-based navigation strategies.
