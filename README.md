@@ -1,4 +1,4 @@
-# Obstacle Avoidance and Robot Following with Dynamic Window Approach
+### Obstacle Avoidance and Robot Following with Dynamic Window Approach
 # 🎯 Objectives and Scope
 
 The purpose of this project is to develop a local navigation planner capable of generating feasible trajectories that:
