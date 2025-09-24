@@ -45,9 +45,7 @@ LiDAR scan data may contain invalid readings (***NaN***, ***∞***). A preproces
 - Replaces NaN with a minimum value, ∞ with max range.
 - Saturates values to ***3.5 m***.
 - Groups data by angular sectors, taking the minimum in each sector. This yields a compact and reliable obstacle set.
-
-    (...)
-
+(''')
     def process_data(self, points):
         """Filter outlier values from ranges, subsample the desired num of ranges, saturate to max_dist"""
 
@@ -66,7 +64,7 @@ LiDAR scan data may contain invalid readings (***NaN***, ***∞***). A preproces
             scan_range.append([min(grouped_range), np.argmin(grouped_range)+i*(group_length)])
 
         return np.array(scan_range)
-
+(''')
 ### Obstacle Mapping
 The obstacle coordinates are computed from LiDAR data and expressed in the **global frame** using linear transformations.  
 Since the LiDAR is mounted on the robot’s front, each detected point in the **sensor frame** can be transformed into global coordinates through:
