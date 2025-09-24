@@ -253,10 +253,12 @@ For this reason, the cost function was modified with two main changes:
 The new objective function can be expressed as:
 
 $$
-G(v, \omega) = \sigma \big( \alpha \cdot heading(v, \omega) 
-+ \beta \cdot vel(v, \omega) 
-+ \gamma \cdot dist(v, \omega) 
-+ \sigma \cdot sightline(v, \omega) \big)
+G(v,\omega) = \mathrm{norm}\!\left(
+  \alpha\,\mathrm{heading}(v,\omega) +
+  \beta\,\mathrm{vel}(v,\omega) +
+  \gamma\,\mathrm{dist}(v,\omega) +
+  \delta\,\mathrm{sightline}(v,\omega)
+\right)
 $$
 
 Where:  
