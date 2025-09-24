@@ -3,7 +3,7 @@
 
 The purpose of this project is to develop a local navigation planner capable of generating feasible trajectories that:
 
-* Respect the robot’s kinematic constraints (linear and angular velocity/acceleration limits).
+- Respect the robot’s kinematic constraints (linear and angular velocity/acceleration limits).
 
 * Avoid obstacles that may appear after global planning.
 
